@@ -1,0 +1,31 @@
+name: QMK
+
+on:
+  - push
+
+defaults:
+  run:
+    environment:
+      KEYBOARD: '/keyball/keyball39k'
+      KEYMAP: 'default'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Clone qmk/qmk_firmware
+      uses: actions/checkout@v2
+      with:
+        repository: 'qmk/qmk_firmware'
+        submodules: true
+
+    - name: Install dependencies
+      run: ./util/qmk_install.sh
+
+    - name: Compile
+      run: ./bin/qmk compile -kb $KEYBOARD -km $KEYMAP
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: ./.build/*.hex
